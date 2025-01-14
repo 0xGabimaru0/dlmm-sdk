@@ -3,52 +3,58 @@ from enum import Enum
 from solders.pubkey import Pubkey
 from typing import Any, List, TypedDict
 
+
 class DlmmHttpError(Exception):
+
     def __init__(self, message):
         super().__init__(message)
 
+
 class StrategyType(Enum):
-    SpotOneSide=0,
-    CurveOneSide=1,
-    BidAskOneSide=2,
-    SpotImBalanced=3,
-    CurveImBalanced=4,
-    BidAskImBalanced=5,
-    SpotBalanced=6,
-    CurveBalanced=7,
-    BidAskBalanced=8
+    SpotOneSide = 0,
+    CurveOneSide = 1,
+    BidAskOneSide = 2,
+    SpotImBalanced = 3,
+    CurveImBalanced = 4,
+    BidAskImBalanced = 5,
+    SpotBalanced = 6,
+    CurveBalanced = 7,
+    BidAskBalanced = 8
 
     def __str__(self) -> str:
         return f"{self.value[0]}"
-    
+
     def __repr__(self) -> str:
         return self.name
 
-class ActivationType(Enum):  
-    Slot=0,
-    Timestamp=1,
+
+class ActivationType(Enum):
+    Slot = 0,
+    Timestamp = 1,
 
     def __str__(self) -> str:
-        return f"{self.value[1]}
-    
+        return f"{self.value[1]}"
+
     def __repr__(self) -> str:
         return self.name
 
 
 class PositionVersion(Enum):
-    V1="V1",
-    V2="V2"
+    V1 = "V1",
+    V2 = "V2"
 
     def __str__(self) -> str:
         return self.name
-    
+
     def __repr__(self) -> str:
         return self.name
+
 
 class StrategyParameters(TypedDict):
     max_bin_id: int
     min_bin_id: int
     strategy_type: StrategyType
+
 
 @dataclass
 class ActiveBin():
@@ -68,6 +74,7 @@ class ActiveBin():
         self.price = float(data["price"])
         self.version = data["version"]
         self.price_per_token = data["pricePerToken"]
+
 
 @dataclass
 class PositionBinData():
@@ -124,6 +131,7 @@ class PositionBinData():
             "positionYAmount": self.position_y_amount
         }
 
+
 @dataclass
 class PositionData():
     total_x_amount: str
@@ -170,7 +178,9 @@ class PositionData():
 
         self.total_x_amount = data["totalXAmount"]
         self.total_y_amount = data["totalYAmount"]
-        self.position_bin_data = [PositionBinData(bin_data) for bin_data in data["positionBinData"]]
+        self.position_bin_data = [
+            PositionBinData(bin_data) for bin_data in data["positionBinData"]
+        ]
         self.last_updated_at = data["lastUpdatedAt"]
         self.upper_bin_id = data["upperBinId"]
         self.lower_bin_id = data["lowerBinId"]
@@ -181,26 +191,40 @@ class PositionData():
         self.fee_owner = data["feeOwner"]
         self.total_claimed_fee_X_amount = data["totalClaimedFeeXAmount"]
         self.total_claimed_fee_Y_amount = data["totalClaimedFeeYAmount"]
-    
+
     def to_json(self) -> dict:
         return {
-            "totalXAmount": self.total_x_amount,
-            "totalYAmount": self.total_y_amount,
-            "positionBinData": [bin_data.to_json() for bin_data in self.position_bin_data],
-            "lastUpdatedAt": self.last_updated_at,
-            "upperBinId": self.upper_bin_id,
-            "lowerBinId": self.lower_bin_id,
-            "feeX": self.fee_X,
-            "feeY": self.fee_Y,
-            "rewardOne": self.reward_one,
-            "rewardTwo": self.reward_two,
-            "feeOwner": self.fee_owner,
-            "totalClaimedFeeXAmount": self.total_claimed_fee_X_amount,
-            "totalClaimedFeeYAmount": self.total_claimed_fee_Y_amount
+            "totalXAmount":
+            self.total_x_amount,
+            "totalYAmount":
+            self.total_y_amount,
+            "positionBinData":
+            [bin_data.to_json() for bin_data in self.position_bin_data],
+            "lastUpdatedAt":
+            self.last_updated_at,
+            "upperBinId":
+            self.upper_bin_id,
+            "lowerBinId":
+            self.lower_bin_id,
+            "feeX":
+            self.fee_X,
+            "feeY":
+            self.fee_Y,
+            "rewardOne":
+            self.reward_one,
+            "rewardTwo":
+            self.reward_two,
+            "feeOwner":
+            self.fee_owner,
+            "totalClaimedFeeXAmount":
+            self.total_claimed_fee_X_amount,
+            "totalClaimedFeeYAmount":
+            self.total_claimed_fee_Y_amount
         }
 
+
 @dataclass
-class  Position():
+class Position():
     public_key: Pubkey
     position_data: PositionData
     position_version: PositionVersion
@@ -216,13 +240,14 @@ class  Position():
         self.public_key = Pubkey.from_string(data["publicKey"])
         self.position_data = PositionData(data["positionData"])
         self.position_version = data["version"]
-    
+
     def to_json(self):
         return {
             "publicKey": str(self.public_key),
             "positionData": self.position_data.to_json(),
             "version": str(self.position_version)
         }
+
 
 @dataclass
 class GetPositionByUser():
@@ -231,7 +256,10 @@ class GetPositionByUser():
 
     def __init__(self, data: dict):
         self.active_bin = ActiveBin(data["activeBin"])
-        self.user_positions = [Position(position) for position in data["userPositions"]]
+        self.user_positions = [
+            Position(position) for position in data["userPositions"]
+        ]
+
 
 @dataclass
 class SwapQuote():
@@ -250,7 +278,9 @@ class SwapQuote():
         self.protocol_fee = int(data["protocolFee"])
         self.min_out_amount = int(data["minOutAmount"])
         self.price_impact = float(data["priceImpact"])
-        self.bin_arrays_pubkey = list(map(lambda x: Pubkey.from_string(x), data["binArraysPubkey"]))
+        self.bin_arrays_pubkey = list(
+            map(lambda x: Pubkey.from_string(x), data["binArraysPubkey"]))
+
 
 class LBPair:
     bump_seed: List[int]
@@ -283,7 +313,8 @@ class LBPair:
         self.padding2 = data["padding2"]
         self.fee_owner = Pubkey.from_string(data["feeOwner"])
         self.base_key = data["baseKey"]
-        
+
+
 @dataclass
 class TokenReserve():
     public_key: Pubkey
@@ -296,6 +327,7 @@ class TokenReserve():
         self.reserve = Pubkey.from_string(data["reserve"])
         self.amount = data["amount"]
         self.decimal = data["decimal"]
+
 
 @dataclass
 class PositionInfo():
@@ -310,7 +342,10 @@ class PositionInfo():
         self.lb_pair = data["lbPair"]
         self.token_x = TokenReserve(data["tokenX"])
         self.token_y = TokenReserve(data["tokenY"])
-        self.lb_pair_positions_data = [Position(position) for position in data["lbPairPositionsData"]]
+        self.lb_pair_positions_data = [
+            Position(position) for position in data["lbPairPositionsData"]
+        ]
+
 
 @dataclass
 class FeeInfo():
@@ -322,6 +357,7 @@ class FeeInfo():
         self.base_fee_rate_percentage = float(data["baseFeeRatePercentage"])
         self.max_fee_rate_percentage = float(data["maxFeeRatePercentage"])
         self.protocol_fee_percentage = float(data["protocolFeePercentage"])
+
 
 @dataclass
 class BinLiquidty():
@@ -346,7 +382,7 @@ class BinLiquidty():
             raise AttributeError("version is required")
         if data.get("price") is None:
             raise AttributeError("price is required")
-        
+
         self.bin_id = int(data["binId"])
         self.x_amount = data["xAmount"]
         self.y_amount = data["yAmount"]
@@ -354,6 +390,7 @@ class BinLiquidty():
         self.version = int(data["version"])
         self.price = data["price"]
         self.price_per_token = data["pricePerToken"]
+
 
 @dataclass
 class GetBins():
@@ -363,9 +400,11 @@ class GetBins():
     def __init__(self, data: dict) -> None:
         if data.get("activeBin") is None:
             raise AttributeError("activeBin is required")
-        
+
         if data.get("bins") is None:
             raise AttributeError("bins is required")
-        
+
         self.active_bin = int(data["activeBin"])
-        self.bin_liquidty = [BinLiquidty(bin_data) for bin_data in data["bins"]]
+        self.bin_liquidty = [
+            BinLiquidty(bin_data) for bin_data in data["bins"]
+        ]
